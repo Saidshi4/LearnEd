@@ -3,17 +3,19 @@ package com.example.learned.service.authservice;
 import com.example.learned.dao.ImageRepository;
 import com.example.learned.dao.UserRepository;
 import com.example.learned.entity.ImageEntity;
+import com.example.learned.entity.UserEntity;
 import com.example.learned.mapper.ImageMapper;
 import com.example.learned.model.ImageDto;
 import com.example.learned.util.ImageUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
@@ -23,6 +25,15 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final ImageMapper imageMapper;
     private final UserRepository userRepository;
+    public String saveImage(String imageData,Long userId) throws IOException {
+        byte[] image=Base64.getDecoder().decode(imageData);
+
+        UserEntity user=userRepository.findById(userId).orElse(null);
+        Objects.requireNonNull(user).setImageData(image);
+        userRepository.save(user);
+
+        return "image uploaded successfully";
+    }
     @Transactional
     public String uploadImage(MultipartFile imageFile,Long userId) throws IOException {
         var imageToSave = ImageDto.builder()

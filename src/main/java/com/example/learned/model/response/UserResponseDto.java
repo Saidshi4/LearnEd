@@ -16,13 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UserResponseDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private Integer age;
     private String phoneNumber;
     private String email;
     private EUserStatus status;
-    private List<ImageResponseDto> userFileEntity;
+    private String imageData;
 
 
 }

@@ -2,6 +2,7 @@ package com.example.learned.controller;
 
 import com.example.learned.dao.ImageRepository;
 import com.example.learned.entity.ImageEntity;
+import com.example.learned.model.request.ImageSaveDto;
 import com.example.learned.service.authservice.JwtService;
 import com.example.learned.service.authservice.ImageService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,18 @@ public class ImageController {
   private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final JwtService jwtService;
+    @PostMapping(value = "/saveImage")
 
+    public ResponseEntity<?> saveImage(HttpServletRequest request, @RequestBody ImageSaveDto imageSaveDto) throws IOException {
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""),true);
+        String uploadImage = imageService.saveImage(imageSaveDto.getImageData(), userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(uploadImage);
+    }
     @PostMapping(value = "/uploadImage")
 
     public ResponseEntity<?> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {

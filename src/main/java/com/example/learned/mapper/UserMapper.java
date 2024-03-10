@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    @Mapping(target = "userFileEntity", expression = "java(mapImage(userEntity.getUserFileEntity()))")
+    @Mapping(target = "imageData", expression = "java(mapImage(userEntity.getImageData()))")
     UserResponseDto mapEntityToResponseDto(UserEntity userEntity);
     UserGetDto2 mapEntityToGetDto2(UserEntity userEntity);
 
@@ -25,16 +25,9 @@ public interface UserMapper {
     UserGetDto mapEntitytoGetDto(UserEntity userEntity);
 
     List<UserVerifyResponseDto> mapEntityToVerifyDtos(List<UserEntity> userEntity);
-    default List<ImageResponseDto> mapImage(List<ImageEntity> userFileEntities){
-        return userFileEntities.stream()
-                .map(userFileEntity->
-                        new ImageResponseDto(
-                                userFileEntity.getId(),
-                                userFileEntity.getName(),
-                                userFileEntity.getType(),
-                                java.util.Base64.getEncoder().encodeToString(userFileEntity.getImageData()))
-                                )
-                .collect(Collectors.toList());
+    default String mapImage(byte[] imageData){
+        return java.util.Base64.getEncoder().encodeToString(imageData);
+
     }
 
     default List<UserRoleDto> mapUserRoleEntitiesToDtos(List<UserRoleEntity> userRoleEntities) {

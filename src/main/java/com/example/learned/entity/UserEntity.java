@@ -33,6 +33,7 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private EUserStatus status;
     private String password;
+    private byte[] imageData;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
