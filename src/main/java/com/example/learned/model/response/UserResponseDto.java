@@ -1,12 +1,15 @@
 package com.example.learned.model.response;
 
+import com.example.learned.entity.ImageEntity;
 import com.example.learned.entity.enums.EUserStatus;
+import com.example.learned.model.ImageDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,17 +18,11 @@ import java.time.LocalDate;
 public class UserResponseDto {
     private String firstName;
     private String lastName;
-    private String fatherName;
-    private LocalDate birthDate;
-    private String serialNumber;
-    private String finCode;
-    private String cityOrDistrict;
-    private String email;
+    private Integer age;
     private String phoneNumber;
+    private String email;
     private EUserStatus status;
-    private Boolean educationalInstitution;
-    private Boolean masterDegree;
-    private Boolean educationStatus;
-    private String imageUrl;
+    private List<ImageResponseDto> userFileEntity;
+
 
 }

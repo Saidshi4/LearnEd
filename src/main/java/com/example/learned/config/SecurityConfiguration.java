@@ -31,10 +31,10 @@ public class SecurityConfiguration {
                         auth.requestMatchers("/v1/auth/register").permitAll()
                                 .requestMatchers("v1/**").permitAll()
                                 .requestMatchers("/v1/auth/login").permitAll()
-                                .requestMatchers("/v1/auth/user/**").hasAnyRole("USER","ADMIN")
+                                .requestMatchers("/v1/auth/user/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/v1/products/public/**").permitAll()
                                 .requestMatchers("/v1/carSalons/public/**").permitAll()
-                                .requestMatchers("/v1/products/user/**").hasAnyRole("USER","ADMIN")
+                                .requestMatchers("/v1/products/user/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers("/v1/brands/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/v1/carSalons/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/v1/cities/admin/**").hasRole("ADMIN")
@@ -47,6 +47,7 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
     @Bean
     public UserDetailsService userDetailsServicess() {
         User.UserBuilder users = User.withDefaultPasswordEncoder();
@@ -64,8 +65,9 @@ public class SecurityConfiguration {
                 .roles("ADMIN")
                 .authorities("READ", "CREATE", "DELETE")
                 .build();
-        return new InMemoryUserDetailsManager(user,admin);
+        return new InMemoryUserDetailsManager(user, admin);
     }
+
     public static String[] permitSwagger = {
             "/api/v1/auth/**",
             "v3/api-docs/**",

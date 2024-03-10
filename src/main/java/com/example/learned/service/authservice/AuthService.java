@@ -9,6 +9,7 @@ import com.example.learned.entity.enums.ERole;
 import com.example.learned.mapper.UserMapper;
 import com.example.learned.mapper.UserRoleMapper;
 import com.example.learned.model.DataResult;
+import com.example.learned.model.UserGetDto;
 import com.example.learned.model.auth.AuthRequestDto;
 import com.example.learned.model.auth.AuthenticationDto;
 import com.example.learned.model.auth.UserRegisterRequestDto;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 
 @Service
@@ -50,11 +52,6 @@ public class AuthService {
         UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         userRepository.save(user);
-//        emailSender.sendSimpleEmail(requestDto.getEmail(), "Ilkin qeydiyyat merhelesi",
-//                "Hörmətli " +requestDto.getFirstName()+" "+requestDto.getLastName()+ "\n" +
-//                        "Təbrik edirik! Siz Femida Könüllüsü olmaq üçün ilkin müraciəti tamamladınız. Zəhmət olmasa 5 gün ərzində  qeydiyyatı və şəxsi kabinet yaratma mərhələsini tamamlayasınız."+"\n"+
-//                        "Əks halda, qeydiyyatınız nəzərə alınmayacaq və yenidən qeydiyyatdan keçməli olacaqsınız."+"\n" +
-//                "Müraciətiniz üçün təşəkkür edirik.");
         UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
         var accessToken = jwtService.generateAccessToken(user1);
         return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
@@ -70,8 +67,6 @@ public class AuthService {
         userRepository.save(user);
         UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
         RoleEntity role=roleRepository.findByName(ERole.ADMIN);
-//        UserRoleRequestDto userRoleRequestDto=new UserRoleRequestDto(user1.getId(),role.getId());
-//        usersRolesRepository.save(userRoleMapper.mapRequestDtoToEntity(userRoleRequestDto));
         var accessToken = jwtService.generateAccessToken(user1);
         return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
                 .accessToken(accessToken)

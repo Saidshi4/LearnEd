@@ -20,12 +20,10 @@ import org.springframework.context.annotation.Configuration;
 )
 public class SwaggerConfig {
 
-
     @Bean
     public OpenAPI myOpenAPI() {
 
         Contact contact = new Contact();
-
 
         Info info = new Info()
                 .title("Test")

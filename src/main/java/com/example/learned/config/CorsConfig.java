@@ -13,9 +13,9 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("*"); // İzin verilen origin (örnekte herkese izin verilmiştir, güvenlik nedeniyle spesifik bir değer kullanmanız önerilir)
-        config.addAllowedMethod("*"); // İzin verilen HTTP methodları (GET, POST, vb.)
-        config.addAllowedHeader("*"); // İzin verilen HTTP başlıkları
+        config.addAllowedOrigin("*");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }

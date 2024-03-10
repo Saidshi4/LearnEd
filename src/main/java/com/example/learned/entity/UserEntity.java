@@ -27,28 +27,20 @@ public class UserEntity implements UserDetails {
     private Long id;
     private String firstName;
     private String lastName;
-    private String fatherName;
-    private LocalDate birthDate;
-    private String serialNumber;
-    private String finCode;
-    private String cityOrDistrict;
-    private String email;
+    private Integer age;
     private String phoneNumber;
+    private String email;
     @Enumerated(EnumType.STRING)
     private EUserStatus status;
     private String password;
-    private Boolean educationalInstitution;
-    private Boolean masterDegree;
-    private Boolean educationStatus;
-    private String imageUrl;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-//    @OneToMany(mappedBy = "user")
-//    private List<SubUserEntity> userEntities;
-//    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
-//    private List<UserFileEntity> userFileEntity;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
+    private List<ImageEntity> userFileEntity;
+
     @OneToMany(fetch=FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
     private List<UserRoleEntity> userRoles;
     @Override

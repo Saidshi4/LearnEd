@@ -20,10 +20,4 @@ public class UserService {
     public UserResponseDto getUserById(Long userId){
         return userMapper.mapEntityToResponseDto(userRepository.findById(userId).orElseThrow());
     }
-//    public UserVerifyResponseDto getUserAndSubUsers(Long userId){
-//        return userMapper.mapEntityToVerifyDto(userRepository.findById(userId).orElse(null));
-//    }
-//    public List<PendingUserResponseDto> getPendingUsers(){
-//        return userMapper.mapEntityToPendingDtos(userRepository.getVerifyUsers());
-//    }
 }

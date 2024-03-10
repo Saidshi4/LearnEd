@@ -23,13 +23,13 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/getUser")
-    public UserResponseDto getUserById(HttpServletRequest request){
+    public UserResponseDto getUserById(HttpServletRequest request) {
 
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Invalid token");
         }
-        Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""),true);
+        Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
         return userService.getUserById(userId);
 
     }
@@ -40,7 +40,7 @@ public class UserController {
 //    @GetMapping("/getPendingUsers/{userId}")
 //    public DataResult<UserVerifyResponseDto> getUserAndSubData(@PathVariable Long userId){
 //        return new DataResult<>("Succesfuly", HttpStatus.OK.value(), userService.getUserAndSubUsers(userId));
-    }
+}
 
 
 

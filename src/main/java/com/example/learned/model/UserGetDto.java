@@ -14,18 +14,11 @@ import java.util.List;
 public class UserGetDto {
     private String firstName;
     private String lastName;
-    private String fatherName;
-    private LocalDate birthDate;
-    private String serialNumber;
-    private String finCode;
-    private String cityOrDistrict;
-    private String email;
+    private Integer age;
     private String phoneNumber;
+    private String email;
     private EUserStatus status;
     private String password;
-    private Boolean educationalInstitution;
-    private Boolean masterDegree;
-    private Boolean educationStatus;
     private List<UserRoleDto> userRoles;
 
 
