@@ -5,6 +5,7 @@ import com.example.learned.dao.UserRepository;
 import com.example.learned.dao.UsersRolesRepository;
 import com.example.learned.entity.RoleEntity;
 import com.example.learned.entity.UserEntity;
+import com.example.learned.entity.UserRoleEntity;
 import com.example.learned.entity.enums.ERole;
 import com.example.learned.mapper.UserMapper;
 import com.example.learned.mapper.UserRoleMapper;
@@ -53,6 +54,12 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         userRepository.save(user);
         UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
+        RoleEntity role=roleRepository.findByName(ERole.USER);
+        UserRoleEntity userRole=UserRoleEntity.builder().
+                user(user1)
+                .role(role)
+                .build();
+        usersRolesRepository.save(userRole);
         var accessToken = jwtService.generateAccessToken(user1);
         return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
                 .accessToken(accessToken)
@@ -67,6 +74,11 @@ public class AuthService {
         userRepository.save(user);
         UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
         RoleEntity role=roleRepository.findByName(ERole.ADMIN);
+        UserRoleEntity userRole=UserRoleEntity.builder().
+                user(user1)
+                .role(role)
+                .build();
+        usersRolesRepository.save(userRole);
         var accessToken = jwtService.generateAccessToken(user1);
         return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
                 .accessToken(accessToken)
