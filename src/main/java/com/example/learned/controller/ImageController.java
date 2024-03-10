@@ -28,7 +28,6 @@ public class ImageController {
     private final JwtService jwtService;
 
     @PostMapping(value = "/uploadImage")
-
     public ResponseEntity<?> uploadImage(HttpServletRequest request, @RequestParam("image") MultipartFile file) throws IOException {
         if (file.isEmpty()) throw new FileNotFoundException("You should provide a valid file");
 
@@ -41,8 +40,6 @@ public class ImageController {
         String uploadImage = imageService.uploadImage(file, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(uploadImage);
     }
-
-
     @GetMapping("/{fileName}")
     public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
         byte[] imageData = imageService.downloadImage(fileName);
