@@ -48,7 +48,7 @@ public class AuthService {
 
 
     @Transactional
-    public DataResult<AuthenticationDto> register(UserRegisterRequestDto requestDto) throws MessagingException, UnsupportedEncodingException {
+    public AuthenticationDto register(UserRegisterRequestDto requestDto) throws MessagingException, UnsupportedEncodingException {
 
         UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
@@ -61,13 +61,13 @@ public class AuthService {
                 .build();
         usersRolesRepository.save(userRole);
         var accessToken = jwtService.generateAccessToken(user1);
-        return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
+        return AuthenticationDto.builder()
                 .accessToken(accessToken)
-                .build());
+                .build();
 
     }
     @Transactional
-    public DataResult<AuthenticationDto> registerAdmin(UserRegisterRequestDto requestDto) {
+    public AuthenticationDto registerAdmin(UserRegisterRequestDto requestDto) {
 
         UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
@@ -80,25 +80,10 @@ public class AuthService {
                 .build();
         usersRolesRepository.save(userRole);
         var accessToken = jwtService.generateAccessToken(user1);
-        return new DataResult<>("Succesfuly", HttpStatus.OK.value(),AuthenticationDto.builder()
-                .accessToken(accessToken)
-                .build());
-
-    }
-    public AuthenticationDto authenticateAdmin(AuthRequestDto authRequestDto) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequestDto.getEmail(),
-                        authRequestDto.getPassword()
-                )
-        );
-        UserEntity user = userRepository.findUserByEmail(authRequestDto.getEmail()).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
         return AuthenticationDto.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
+
     }
     public AuthenticationDto authenticate(AuthRequestDto authRequestDto) {
         authManager.authenticate(

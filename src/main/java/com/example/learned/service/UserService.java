@@ -16,7 +16,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    @Transactional(readOnly = true)
+    @Transactional
     public UserResponseDto getUserById(Long userId){
         return userMapper.mapEntityToResponseDto(userRepository.findById(userId).orElseThrow());
     }

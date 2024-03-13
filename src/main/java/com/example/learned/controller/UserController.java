@@ -8,12 +8,14 @@ import com.example.learned.service.authservice.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -23,23 +25,22 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/getUser")
-    public UserResponseDto getUserById(HttpServletRequest request) {
-
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Invalid token");
+    public ResponseEntity<DataResult<UserResponseDto>> getUserById(HttpServletRequest request) {
+        try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+            Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
+            UserResponseDto userResponseDto = userService.getUserById(userId);
+            return ResponseEntity.ok(new DataResult<>("Successfully", HttpStatus.OK.value(), userResponseDto));
+        } catch (NoSuchElementException | NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DataResult<>("Invalid token", HttpStatus.BAD_REQUEST.value(), null));
         }
-        Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
-        return userService.getUserById(userId);
-
     }
-//    @GetMapping("/getPendingUsers")
-//    public DataResult<List<PendingUserResponseDto>> getPendingUsers(){
-//        return new DataResult<>("Succesfuly", HttpStatus.OK.value(), userService.getPendingUsers());
-////    }
-//    @GetMapping("/getPendingUsers/{userId}")
-//    public DataResult<UserVerifyResponseDto> getUserAndSubData(@PathVariable Long userId){
-//        return new DataResult<>("Succesfuly", HttpStatus.OK.value(), userService.getUserAndSubUsers(userId));
+
 }
 
 

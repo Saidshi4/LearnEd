@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Data
 public class DataResult<T>{
+    private Integer status;
     private String message;
-    private Integer responseCode;
     private T data;
 
-    public DataResult(String message, Integer responseCode, T data) {
+    public DataResult(String message, Integer status, T data) {
         this.message = message;
-        this.responseCode = responseCode;
+        this.status = status;
         this.data = data;
     }
 }

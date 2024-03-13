@@ -26,8 +26,12 @@ public interface UserMapper {
 
     List<UserVerifyResponseDto> mapEntityToVerifyDtos(List<UserEntity> userEntity);
     default String mapImage(byte[] imageData){
-        return java.util.Base64.getEncoder().encodeToString(imageData);
-
+        if(imageData!=null) {
+            return java.util.Base64.getEncoder().encodeToString(imageData);
+        }
+        else{
+            return null;
+        }
     }
 
     default List<UserRoleDto> mapUserRoleEntitiesToDtos(List<UserRoleEntity> userRoleEntities) {

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Optional;
@@ -25,15 +26,19 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final ImageMapper imageMapper;
     private final UserRepository userRepository;
-    public String saveImage(String imageData,Long userId) throws IOException {
+    public void saveImage(String imageData,Long userId) throws IOException{
         byte[] image=Base64.getDecoder().decode(imageData);
 
         UserEntity user=userRepository.findById(userId).orElse(null);
         Objects.requireNonNull(user).setImageData(image);
         userRepository.save(user);
-
-        return "image uploaded successfully";
     }
+
+    public String showImage(Long userId){
+        UserEntity user = userRepository.findById(userId).orElseThrow(null);
+        return Base64.getEncoder().encodeToString(user.getImageData());
+    }
+
     @Transactional
     public String uploadImage(MultipartFile imageFile,Long userId) throws IOException {
         var imageToSave = ImageDto.builder()

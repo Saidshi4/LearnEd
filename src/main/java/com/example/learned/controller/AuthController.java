@@ -1,9 +1,5 @@
 package com.example.learned.controller;
 
-import com.example.learned.dao.UserRepository;
-import com.example.learned.dao.UsersRolesRepository;
-import com.example.learned.mapper.UserMapper;
-import com.example.learned.mapper.UserRoleMapper;
 import com.example.learned.model.DataResult;
 import com.example.learned.model.auth.AuthRequestDto;
 import com.example.learned.model.auth.AuthenticationDto;
@@ -12,10 +8,16 @@ import com.example.learned.model.request.RefreshRequestDto;
 import com.example.learned.service.authservice.AuthService;
 import com.example.learned.service.authservice.JwtService;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.io.UnsupportedEncodingException;
 
@@ -26,46 +28,94 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
-    private final UsersRolesRepository usersRolesRepository;
-    private final UserRoleMapper userRoleMapper;
-    private final UserMapper userMapper;
-    @PostMapping(value = "/register",consumes = "application/json", produces = "application/json")
-    public DataResult<AuthenticationDto> register(
+
+
+    @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DataResult<AuthenticationDto>> register(
             @RequestBody UserRegisterRequestDto requestDto
     ) throws MessagingException, UnsupportedEncodingException {
-        return authService.register(requestDto);
+        try {
+            return ResponseEntity.
+                    ok(new DataResult<>("User registered successfully", HttpStatus.OK.value(), authService.register(requestDto)));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).
+                    body(new DataResult<>("Email already exists", HttpStatus.FORBIDDEN.value(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+        }
     }
 
-    @PostMapping(value = "/login",consumes = "application/json", produces = "application/json")
-    public ResponseEntity<AuthenticationDto> login(
-            @RequestBody AuthRequestDto authRequestDto
-    ) {
-        return ResponseEntity.ok(authService.authenticate(authRequestDto));
+    @PostMapping(value = "/admin/register", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DataResult<AuthenticationDto>> registerAdmin(@RequestBody UserRegisterRequestDto requestDto) {
+        try {
+            return ResponseEntity.
+                    ok(new DataResult<>("User registered successfully", HttpStatus.OK.value(), authService.registerAdmin(requestDto)));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).
+                    body(new DataResult<>("Email already exists", HttpStatus.FORBIDDEN.value(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+        }
     }
-    @PostMapping(value = "/admin/register",consumes = "application/json", produces = "application/json")
-    public DataResult<AuthenticationDto> registerAdmin(
-            @RequestBody UserRegisterRequestDto requestDto
-    )  {
-        return authService.registerAdmin(requestDto);
+    @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DataResult<AuthenticationDto>> login(@RequestBody AuthRequestDto authRequestDto) {
+        try {
+            AuthenticationDto authenticationDto = authService.authenticate(authRequestDto);
+            return ResponseEntity.ok(new DataResult<>("User login successfully", HttpStatus.OK.value(), authenticationDto));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new DataResult<>("Invalid email or password", HttpStatus.FORBIDDEN.value(), null));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
+        }
     }
 
-    @PostMapping(value = "/admin/login",consumes = "application/json", produces = "application/json")
-    public ResponseEntity<AuthenticationDto> loginAdmin(
-            @RequestBody AuthRequestDto authRequestDto
-    ) {
-        return ResponseEntity.ok(authService.authenticate(authRequestDto));
+    @PostMapping(value = "/admin/login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DataResult<AuthenticationDto>> loginAdmin(@RequestBody AuthRequestDto authRequestDto) {
+        try {
+            AuthenticationDto authenticationDto = authService.authenticate(authRequestDto);
+            return ResponseEntity.ok(new DataResult<>("Admin login successfully", HttpStatus.OK.value(), authenticationDto));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new DataResult<>("Invalid email or password", HttpStatus.FORBIDDEN.value(), null));
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new DataResult<>("Admin not found", HttpStatus.NOT_FOUND.value(), null));
+        }
     }
-    @PostMapping(value = "/generateAccessToken",consumes = "application/json", produces = "application/json")
-    public AuthenticationDto generateAccessToken(@RequestBody RefreshRequestDto refreshRequestDto){
-        return authService.generateAccessToken(refreshRequestDto.getRefreshToken());
-    }
+
+
     @DeleteMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public void deleteUser(@PathVariable Long userId){
-        authService.deleteUser(userId);
+    public ResponseEntity<DataResult<?>> deleteUser(HttpServletRequest request) {
+        try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+            Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""),true);
+            authService.deleteUser(userId);
+
+            return ResponseEntity.ok(new DataResult<>("User deleted successfully", HttpStatus.OK.value(), null));
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new DataResult<>("Invalid token", HttpStatus.BAD_REQUEST.value(), null));
+        } catch (RuntimeException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
+        }
     }
 
-
+    @PostMapping(value = "/generateAccessToken", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<DataResult<AuthenticationDto>> generateAccessToken(@RequestBody RefreshRequestDto refreshRequestDto) {
+        try {
+            return ResponseEntity.ok(new DataResult<>("Token generated successfully", HttpStatus.OK.value(), authService.generateAccessToken(refreshRequestDto.getRefreshToken())));
+        }catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new DataResult<>("Invalid refresh token", HttpStatus.FORBIDDEN.value(), null));
+        }
+    }
 
 }
