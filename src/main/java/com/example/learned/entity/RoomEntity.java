@@ -20,7 +20,7 @@ public class RoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
+    String nickname;
     String password;
     @CreationTimestamp
     LocalDateTime createdAt;

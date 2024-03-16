@@ -33,6 +33,9 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.2'
     implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
+    //websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.3'
+
 
 }
 
