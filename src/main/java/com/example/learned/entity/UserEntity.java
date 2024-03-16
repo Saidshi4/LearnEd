@@ -44,6 +44,9 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(fetch=FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
     private List<UserRoleEntity> userRoles;
+    @OneToMany(mappedBy = "user")
+    private List<RoomUserEntity> roomUserEntities;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.userRoles.stream()

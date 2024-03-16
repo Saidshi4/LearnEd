@@ -86,10 +86,15 @@ public class AuthController {
                     .body(new DataResult<>("Admin not found", HttpStatus.NOT_FOUND.value(), null));
         }
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/getmet")
+    public String test(){
+        return "hello";
+    }
 
 
     @DeleteMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<DataResult<?>> deleteUser(HttpServletRequest request) {
         try {
             String token = request.getHeader("Authorization");
