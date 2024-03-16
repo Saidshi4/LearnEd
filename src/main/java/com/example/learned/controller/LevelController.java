@@ -28,13 +28,9 @@ public class LevelController {
     private final LevelService levelService;
     private final RoomMapper roomMapper;
     private final RoomRepository roomRepository;
-    @GetMapping
+    @GetMapping("/getAllRoomsWithLevel")
     public List<LevelRoomResponseDto> getAll(){
         return levelService.getAllLevelAndRooms();
-    }
-    @GetMapping("/sa")
-    public List<RoomResponseDto> getAll1(){
-        return roomMapper.mapEntityToResponseDtos(roomRepository.findAll());
     }
 
 
