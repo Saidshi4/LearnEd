@@ -23,9 +23,8 @@ import java.util.List;
 @FieldDefaults(level= AccessLevel.PRIVATE)
 public class RoomResponseDto {
     Long id;
-    String name;
     LocalDateTime createdAt;
-    Integer participant;
+    Integer participantCount;
     Boolean pub;
     String topicName;
     String nickname;
