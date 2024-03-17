@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,17 +41,16 @@ public class UserEntity implements UserDetails {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
-    private List<ImageEntity> userFileEntity;
-
-    @OneToMany(fetch=FetchType.EAGER,mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(fetch=FetchType.EAGER,mappedBy = "user")
     private List<UserRoleEntity> userRoles;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch=FetchType.LAZY)
     private List<RoomUserEntity> roomUserEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.userRoles == null) {
+            return Collections.emptyList();
+        }
         return this.userRoles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole().getName()))
                 .collect(Collectors.toList());

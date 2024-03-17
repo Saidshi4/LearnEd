@@ -1,34 +1,23 @@
 package com.example.learned.controller;
 
-import com.example.learned.dao.ImageRepository;
-import com.example.learned.entity.ImageEntity;
 import com.example.learned.model.DataResult;
 import com.example.learned.model.request.ImageSaveDto;
 import com.example.learned.service.authservice.JwtService;
 import com.example.learned.service.authservice.ImageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-
-import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 
 @RestController
 @RequestMapping("/v1/image")
 @RequiredArgsConstructor
 public class ImageController {
-  private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final JwtService jwtService;
     @PostMapping(value = "/saveImage")

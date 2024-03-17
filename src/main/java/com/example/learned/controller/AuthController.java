@@ -40,9 +40,9 @@ public class AuthController {
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).
                     body(new DataResult<>("Email already exists", HttpStatus.FORBIDDEN.value(), null));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
-                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+//                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
         }
     }
 

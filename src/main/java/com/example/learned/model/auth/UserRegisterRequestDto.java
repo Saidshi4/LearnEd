@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRegisterRequestDto {
+    private String nickname;
     private String firstName;
     private String lastName;
     private Integer age;
