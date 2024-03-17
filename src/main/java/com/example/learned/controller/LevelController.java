@@ -2,6 +2,7 @@ package com.example.learned.controller;
 
 import com.example.learned.dao.RoomRepository;
 import com.example.learned.mapper.RoomMapper;
+import com.example.learned.model.response.LevelResponseDto;
 import com.example.learned.model.response.LevelRoomResponseDto;
 import com.example.learned.service.LevelService;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LevelController {
     private final LevelService levelService;
-    private final RoomMapper roomMapper;
-    private final RoomRepository roomRepository;
     @GetMapping("/getAllRoomsWithLevel")
-    public List<LevelRoomResponseDto> getAll(){
+    public List<LevelRoomResponseDto> getAllRoomWithLevel(){
         return levelService.getAllLevelAndRooms();
+    }
+    @GetMapping("/getAllLevel")
+    public List<LevelResponseDto> getAllLevel(){
+        return levelService.getAllLevel();
     }
 
 

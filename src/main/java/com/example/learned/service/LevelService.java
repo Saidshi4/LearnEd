@@ -4,6 +4,7 @@ import com.example.learned.dao.LevelRepository;
 import com.example.learned.entity.LevelEntity;
 import com.example.learned.mapper.LevelMapper;
 import com.example.learned.mapper.RoomMapper;
+import com.example.learned.model.response.LevelResponseDto;
 import com.example.learned.model.response.LevelRoomResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,9 @@ public class LevelService {
                     return levelRoomResponseDto;
                 })
                 .collect(Collectors.toList());
+    }
+    public List<LevelResponseDto> getAllLevel(){
+        return levelMapper.mapEntityToLevelResponseDtos(levelRepository.findAll());
+
     }
 }
