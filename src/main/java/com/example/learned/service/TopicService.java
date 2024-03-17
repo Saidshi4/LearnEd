@@ -27,8 +27,8 @@ public class TopicService {
     private final TopicMapper topicMapper;
     public List<TopicResponseDto> getAllTopicByCategegory(Long categoryId, int pageNo, int pageSize){
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
-        Page<TopicEntity> pagingUser = topicRepository.getTopicEntitiesByCategory_Id(categoryId,  pageRequest);
-        return topicMapper.mapEntityToTopicResponses(pagingUser.getContent());
+        Page<TopicEntity> pagingTopic = topicRepository.getTopicEntitiesByCategory_Id(categoryId,  pageRequest);
+        return topicMapper.mapEntityToTopicResponses(pagingTopic.getContent());
 
     }
 }
