@@ -45,6 +45,25 @@ public class JwtService {
             return null;
         }
     }
+    public String  extractUserNicknameFromAccessToken(String token, boolean isAccessToken) {
+        if (token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Token cannot be null or empty");
+        }
+
+        try {
+            Claims claims;
+            if (isAccessToken) {
+                claims = extractAllClaimsAccess(token);
+            } else {
+                claims = extractAllClaimsRefresh(token);
+            }
+
+            return claims.get("nickname", String.class);
+        } catch (Exception e) {
+            // Handle exceptions gracefully (e.g., log, return null)
+            return null;
+        }
+    }
     public String extractUsernameAccess(String token) {
         return extractClaimAccess(token, Claims::getSubject);
     }
@@ -71,7 +90,8 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
-        UserEntity userEntity = (UserEntity) userDetails; // Cast UserDetails to UserEntity
+        UserEntity userEntity = (UserEntity) userDetails;
+        extraClaims.put("nickname", userEntity.getNickname());
         extraClaims.put("userId", userEntity.getId());
         extraClaims.put("roles", userEntity.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)

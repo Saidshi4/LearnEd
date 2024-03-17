@@ -24,7 +24,7 @@ public class RoomEntity {
     String password;
     @CreationTimestamp
     LocalDateTime createdAt;
-    Integer participant;
+    Integer participantCount;
     Boolean pub;
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="level_id",referencedColumnName = "id")

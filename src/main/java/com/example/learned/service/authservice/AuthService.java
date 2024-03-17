@@ -10,17 +10,12 @@ import com.example.learned.entity.enums.ERole;
 import com.example.learned.exception.NotFoundException;
 import com.example.learned.mapper.UserMapper;
 import com.example.learned.mapper.UserRoleMapper;
-import com.example.learned.model.DataResult;
-import com.example.learned.model.UserGetDto;
 import com.example.learned.model.auth.AuthRequestDto;
 import com.example.learned.model.auth.AuthenticationDto;
 import com.example.learned.model.auth.UserRegisterRequestDto;
-import com.example.learned.model.request.UserRoleRequestDto;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mapstruct.control.MappingControl;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,14 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
-    private final UserRoleMapper userRoleMapper;
     private final UsersRolesRepository usersRolesRepository;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -109,7 +102,6 @@ public class AuthService {
             throw new NotFoundException("User not found");
         }
     }
-
 
     public AuthenticationDto generateAccessToken(String refreshToken) {
         String email = jwtService.extractUsernameRefresh(refreshToken);
