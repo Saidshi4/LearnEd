@@ -29,6 +29,8 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/v1/auth/register").permitAll()
+                                .requestMatchers("http://localhost:8080").permitAll()
+                                .requestMatchers("localhost:8080").permitAll()
                                 .requestMatchers("v1/**").permitAll()
                                 .requestMatchers("/v1/auth/login").permitAll()
                                 .requestMatchers("/v1/auth/user/**").hasAnyRole("USER", "ADMIN")

@@ -1,5 +1,6 @@
 package com.example.learned.controller;
 
+import com.example.learned.exception.NotFoundException;
 import com.example.learned.model.DataResult;
 import com.example.learned.model.auth.AuthRequestDto;
 import com.example.learned.model.auth.AuthenticationDto;
@@ -29,7 +30,6 @@ public class AuthController {
     private final AuthService authService;
     private final JwtService jwtService;
 
-
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public ResponseEntity<DataResult<AuthenticationDto>> register(
             @RequestBody UserRegisterRequestDto requestDto
@@ -40,9 +40,9 @@ public class AuthController {
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).
                     body(new DataResult<>("Email already exists", HttpStatus.FORBIDDEN.value(), null));
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
-//                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
+                    body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
         }
     }
 
@@ -60,32 +60,16 @@ public class AuthController {
         }
     }
     @PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<DataResult<AuthenticationDto>> login(@RequestBody AuthRequestDto authRequestDto) {
+    public ResponseEntity<DataResult<AuthenticationDto>> login (@RequestBody AuthRequestDto authRequestDto) {
         try {
             AuthenticationDto authenticationDto = authService.authenticate(authRequestDto);
             return ResponseEntity.ok(new DataResult<>("User login successfully", HttpStatus.OK.value(), authenticationDto));
-        } catch (BadCredentialsException e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new DataResult<>("Invalid email or password", HttpStatus.FORBIDDEN.value(), null));
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
+                    .body(new DataResult<>(e.getMessage(), HttpStatus.FORBIDDEN.value(), null));
         }
     }
 
-    @PostMapping(value = "/admin/login", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<DataResult<AuthenticationDto>> loginAdmin(@RequestBody AuthRequestDto authRequestDto) {
-        try {
-            AuthenticationDto authenticationDto = authService.authenticate(authRequestDto);
-            return ResponseEntity.ok(new DataResult<>("Admin login successfully", HttpStatus.OK.value(), authenticationDto));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new DataResult<>("Invalid email or password", HttpStatus.FORBIDDEN.value(), null));
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new DataResult<>("Admin not found", HttpStatus.NOT_FOUND.value(), null));
-        }
-    }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/getmet")
     public String test(){

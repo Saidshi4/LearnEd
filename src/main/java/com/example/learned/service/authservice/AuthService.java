@@ -7,6 +7,7 @@ import com.example.learned.entity.RoleEntity;
 import com.example.learned.entity.UserEntity;
 import com.example.learned.entity.UserRoleEntity;
 import com.example.learned.entity.enums.ERole;
+import com.example.learned.exception.NotFoundException;
 import com.example.learned.mapper.UserMapper;
 import com.example.learned.mapper.UserRoleMapper;
 import com.example.learned.model.DataResult;
@@ -18,6 +19,7 @@ import com.example.learned.model.request.UserRoleRequestDto;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.control.MappingControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,11 +66,9 @@ public class AuthService {
         return AuthenticationDto.builder()
                 .accessToken(accessToken)
                 .build();
-
     }
     @Transactional
     public AuthenticationDto registerAdmin(UserRegisterRequestDto requestDto) {
-
         UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         userRepository.save(user);
@@ -85,21 +85,31 @@ public class AuthService {
                 .build();
 
     }
-    public AuthenticationDto authenticate(AuthRequestDto authRequestDto) {
-        authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authRequestDto.getEmail(),
-                        authRequestDto.getPassword()
-                )
-        );
-        UserEntity user = userRepository.findUserByEmail(authRequestDto.getEmail()).orElseThrow();
-        var accessToken = jwtService.generateAccessToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        return AuthenticationDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+    public AuthenticationDto authenticate(AuthRequestDto authRequestDto) throws NotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(authRequestDto.getEmail());
+        if (userEntity != null) {
+            if (passwordEncoder.matches(authRequestDto.getPassword(), userEntity.getPassword())) {
+                authManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                authRequestDto.getEmail(),
+                                authRequestDto.getPassword()
+                        )
+                );
+                UserEntity user = userRepository.findUserByEmail(authRequestDto.getEmail()).orElseThrow();
+                var accessToken = jwtService.generateAccessToken(user);
+                var refreshToken = jwtService.generateRefreshToken(user);
+                return AuthenticationDto.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+            } else {
+                throw new NotFoundException("Password invalid");
+            }
+        } else {
+            throw new NotFoundException("User not found");
+        }
     }
+
 
     public AuthenticationDto generateAccessToken(String refreshToken) {
         String email = jwtService.extractUsernameRefresh(refreshToken);
