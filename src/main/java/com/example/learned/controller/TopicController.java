@@ -4,11 +4,14 @@ import com.example.learned.dao.RoomRepository;
 import com.example.learned.entity.TopicEntity;
 import com.example.learned.entity.UserEntity;
 import com.example.learned.mapper.RoomMapper;
+import com.example.learned.model.DataResult;
 import com.example.learned.model.response.LevelRoomResponseDto;
 import com.example.learned.model.response.TopicResponseDto;
 import com.example.learned.service.LevelService;
 import com.example.learned.service.TopicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +23,11 @@ import java.util.List;
 public class TopicController {
     private final TopicService topicService;
     @GetMapping("/getTopicWithPaging/{categoryId}")
-    public List<TopicResponseDto> getTopicWithPaging(@PathVariable Long categoryId, @RequestParam(defaultValue = "0") Integer pageNo,
-                                                     @RequestParam(defaultValue = "10") Integer pageSize){
+    public ResponseEntity<DataResult<List<TopicResponseDto>>> getTopicWithPaging(@PathVariable Long categoryId, @RequestParam(defaultValue = "0") Integer pageNo,
+                                                                               @RequestParam(defaultValue = "10") Integer pageSize){
 
-        return topicService.getAllTopicByCategegory(categoryId,pageNo,pageSize);
+        return ResponseEntity.ok(new DataResult<>("Getting topic by categoryId successfully",
+                HttpStatus.OK.value(), topicService.getAllTopicByCategegory(categoryId,pageNo,pageSize)));
 
     }
-
-
 }

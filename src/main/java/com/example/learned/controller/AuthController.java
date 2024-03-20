@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping(value = "/register", consumes = "application/json", produces = "application/json")
     public ResponseEntity<DataResult<AuthenticationDto>> register(
             @RequestBody UserRegisterRequestDto requestDto
-    ) throws MessagingException, UnsupportedEncodingException {
+    ) {
         try {
             return ResponseEntity.
                     ok(new DataResult<>("User registered successfully", HttpStatus.OK.value(), authService.register(requestDto)));
@@ -69,13 +69,6 @@ public class AuthController {
                     .body(new DataResult<>(e.getMessage(), HttpStatus.FORBIDDEN.value(), null));
         }
     }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/getmet")
-    public String test(){
-        return "hello";
-    }
-
 
     @DeleteMapping("/user/{userId}")
     @PreAuthorize("hasAnyRole('ADMIN')")

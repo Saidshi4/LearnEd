@@ -4,6 +4,7 @@ import com.example.learned.dao.CategoryRepository;
 import com.example.learned.dao.TopicRepository;
 import com.example.learned.entity.CategoryEntity;
 import com.example.learned.entity.TopicEntity;
+import com.example.learned.exception.NotFoundException;
 import com.example.learned.mapper.CategoryMapper;
 import com.example.learned.mapper.TopicMapper;
 import com.example.learned.model.response.CategoryResponseDto;
@@ -25,6 +26,5 @@ public class CategoryService {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("name").ascending());
         Page<CategoryEntity> pagingCategory = categoryRepository.findAll(pageRequest);
         return categoryMapper.mapEntityToCategoryResponses(pagingCategory.getContent());
-
     }
 }
