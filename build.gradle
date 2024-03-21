@@ -36,7 +36,7 @@ dependencies {
     implementation 'jakarta.mail:jakarta.mail-api:2.1.2'
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.3'
-
+    implementation 'org.springframework.security:spring-security-oauth2-client'
 }
 
 tasks.named('test') {

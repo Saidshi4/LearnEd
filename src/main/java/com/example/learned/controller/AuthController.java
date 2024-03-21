@@ -70,8 +70,7 @@ public class AuthController {
         }
     }
 
-    @DeleteMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @DeleteMapping("/deleteUser")
     public ResponseEntity<DataResult<?>> deleteUser(HttpServletRequest request) {
         try {
             String token = request.getHeader("Authorization");

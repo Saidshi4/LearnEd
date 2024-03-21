@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,7 +23,6 @@ public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -30,7 +30,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/v1/auth/register").permitAll()
                                 .requestMatchers("http://localhost:8080").permitAll()
-                                .requestMatchers("localhost:8080").permitAll()
+                                .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("v1/**").permitAll()
                                 .requestMatchers("/v1/auth/login").permitAll()
                                 .requestMatchers("/v1/auth/user/**").hasAnyRole("USER", "ADMIN")
@@ -44,6 +44,10 @@ public class SecurityConfiguration {
                                 .requestMatchers("/v1/subModels/admin/**").hasRole("ADMIN")
                                 .requestMatchers(permitSwagger).permitAll()
                                 .anyRequest().authenticated());
+//        http.oauth2ResourceServer((oauth2) -> oauth2
+//                .jwt(Customizer.withDefaults())
+//        );
+//        http.oauth2Login(Customizer.withDefaults());
         http.authenticationProvider(authenticationProvider);
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
