@@ -1,5 +1,6 @@
 package com.example.learned.controller;
 
+import com.example.learned.exception.AlreadyExistsException;
 import com.example.learned.exception.NotFoundException;
 import com.example.learned.model.DataResult;
 import com.example.learned.model.auth.AuthRequestDto;
@@ -37,9 +38,9 @@ public class AuthController {
         try {
             return ResponseEntity.
                     ok(new DataResult<>("User registered successfully", HttpStatus.OK.value(), authService.register(requestDto)));
-        } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).
-                    body(new DataResult<>("Email already exists", HttpStatus.FORBIDDEN.value(), null));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                    body(new DataResult<>(e.getMessage(), HttpStatus.BAD_REQUEST.value(), null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).
                     body(new DataResult<>("Error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));

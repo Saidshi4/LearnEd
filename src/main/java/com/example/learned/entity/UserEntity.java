@@ -27,11 +27,13 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String nickname;
     private String firstName;
     private String lastName;
     private Integer age;
     private String phoneNumber;
+    @Column(unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
     private EUserStatus status;
@@ -41,9 +43,9 @@ public class UserEntity implements UserDetails {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-    @OneToMany(fetch=FetchType.EAGER,mappedBy = "user")
+    @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.EAGER,mappedBy = "user")
     private List<UserRoleEntity> userRoles;
-    @OneToMany(mappedBy = "user",fetch=FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user",fetch=FetchType.LAZY)
     private List<RoomUserEntity> roomUserEntities;
 
     @Override

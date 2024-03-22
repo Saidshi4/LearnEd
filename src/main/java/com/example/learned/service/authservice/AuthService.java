@@ -7,6 +7,7 @@ import com.example.learned.entity.RoleEntity;
 import com.example.learned.entity.UserEntity;
 import com.example.learned.entity.UserRoleEntity;
 import com.example.learned.entity.enums.ERole;
+import com.example.learned.exception.AlreadyExistsException;
 import com.example.learned.exception.NotFoundException;
 import com.example.learned.mapper.UserMapper;
 import com.example.learned.mapper.UserRoleMapper;
@@ -43,22 +44,30 @@ public class AuthService {
 
 
     @Transactional
-    public AuthenticationDto register(UserRegisterRequestDto requestDto) throws MessagingException, UnsupportedEncodingException {
+    public AuthenticationDto register(UserRegisterRequestDto requestDto) throws AlreadyExistsException{
+        UserEntity userByEmail = userRepository.findByEmail(requestDto.getEmail());
+        UserEntity userByNickname = userRepository.findByNickname(requestDto.getNickname());
 
-        UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
-        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-        userRepository.save(user);
-        UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
-        RoleEntity role=roleRepository.findByName(ERole.USER);
-        UserRoleEntity userRole=UserRoleEntity.builder().
-                user(user1)
-                .role(role)
-                .build();
-        usersRolesRepository.save(userRole);
-        var accessToken = jwtService.generateAccessToken(user1);
-        return AuthenticationDto.builder()
-                .accessToken(accessToken)
-                .build();
+        if (userByEmail == null){
+            if (userByNickname == null){
+                UserEntity user=userMapper.mapRegisterRequestDtoToEntity(requestDto);
+                user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+                userRepository.save(user);
+                UserEntity user1 = userRepository.findUserByEmail(requestDto.getEmail()).orElseThrow();
+                RoleEntity role=roleRepository.findByName(ERole.USER);
+                UserRoleEntity userRole=UserRoleEntity.builder().
+                        user(user1)
+                        .role(role)
+                        .build();
+                usersRolesRepository.save(userRole);
+                var accessToken = jwtService.generateAccessToken(user1);
+                return AuthenticationDto.builder()
+                        .accessToken(accessToken)
+                        .build();
+            }
+            else throw new AlreadyExistsException("Nickname already exists");
+        }
+        else throw new AlreadyExistsException("Email already exists");
     }
     @Transactional
     public AuthenticationDto registerAdmin(UserRegisterRequestDto requestDto) {

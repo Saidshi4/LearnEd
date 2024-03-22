@@ -14,6 +14,7 @@ public class UserResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
+    private String nickname;
     private Integer age;
     private String phoneNumber;
     private String email;
