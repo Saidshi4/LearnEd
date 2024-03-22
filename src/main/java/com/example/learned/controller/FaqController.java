@@ -27,8 +27,8 @@ public class FaqController {
 
     }
     @PostMapping(value = "/saveFaq")
-    public void saveFaq(@RequestBody FaqRequestDto faqRequestDto){
+    public ResponseEntity<DataResult<?>> saveFaq(@RequestBody FaqRequestDto faqRequestDto){
         faqService.saveFaq(faqRequestDto);
+        return ResponseEntity.ok(new DataResult<>("Successfully", HttpStatus.OK.value(), null));
     }
-
 }
