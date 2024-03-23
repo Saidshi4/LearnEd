@@ -5,6 +5,8 @@ import com.example.learned.entity.TopicEntity;
 import com.example.learned.entity.UserEntity;
 import com.example.learned.mapper.RoomMapper;
 import com.example.learned.model.DataResult;
+import com.example.learned.model.request.CategoryRequestDto;
+import com.example.learned.model.request.TopicRequestDto;
 import com.example.learned.model.response.LevelRoomResponseDto;
 import com.example.learned.model.response.TopicResponseDto;
 import com.example.learned.service.LevelService;
@@ -29,5 +31,9 @@ public class TopicController {
         return ResponseEntity.ok(new DataResult<>("Getting topic by categoryId successfully",
                 HttpStatus.OK.value(), topicService.getAllTopicByCategegory(categoryId,pageNo,pageSize)));
 
+    }
+    @PostMapping("/saveTopic")
+    public void saveCategory(@RequestBody TopicRequestDto topicRequestDto){
+        topicService.saveTopic(topicRequestDto);
     }
 }

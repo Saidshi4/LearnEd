@@ -8,6 +8,8 @@ import com.example.learned.entity.UserEntity;
 import com.example.learned.mapper.LevelMapper;
 import com.example.learned.mapper.RoomMapper;
 import com.example.learned.mapper.TopicMapper;
+import com.example.learned.model.request.CategoryRequestDto;
+import com.example.learned.model.request.TopicRequestDto;
 import com.example.learned.model.response.LevelRoomResponseDto;
 import com.example.learned.model.response.TopicResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +32,8 @@ public class TopicService {
         Page<TopicEntity> pagingTopic = topicRepository.getTopicEntitiesByCategory_Id(categoryId,  pageRequest);
         return topicMapper.mapEntityToTopicResponses(pagingTopic.getContent());
 
+    }
+    public void saveTopic(TopicRequestDto topicRequestDto){
+        topicRepository.save(topicMapper.mapRequestDtoToEntity(topicRequestDto));
     }
 }

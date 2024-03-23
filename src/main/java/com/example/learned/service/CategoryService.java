@@ -7,6 +7,7 @@ import com.example.learned.entity.TopicEntity;
 import com.example.learned.exception.NotFoundException;
 import com.example.learned.mapper.CategoryMapper;
 import com.example.learned.mapper.TopicMapper;
+import com.example.learned.model.request.CategoryRequestDto;
 import com.example.learned.model.response.CategoryResponseDto;
 import com.example.learned.model.response.TopicResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,8 @@ public class CategoryService {
         PageRequest pageRequest = PageRequest.of(pageNo, pageSize, Sort.by("name").ascending());
         Page<CategoryEntity> pagingCategory = categoryRepository.findAll(pageRequest);
         return categoryMapper.mapEntityToCategoryResponses(pagingCategory.getContent());
+    }
+    public void saveCategory(CategoryRequestDto categoryRequestDto){
+        categoryRepository.save(categoryMapper.mapRequestDtoToEntity(categoryRequestDto));
     }
 }

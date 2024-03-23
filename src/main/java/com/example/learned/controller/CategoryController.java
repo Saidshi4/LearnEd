@@ -1,6 +1,7 @@
 package com.example.learned.controller;
 
 import com.example.learned.model.DataResult;
+import com.example.learned.model.request.CategoryRequestDto;
 import com.example.learned.model.response.CategoryResponseDto;
 import com.example.learned.model.response.TopicResponseDto;
 import com.example.learned.service.CategoryService;
@@ -20,10 +21,13 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/getCategoryWithPaging")
-    public ResponseEntity<DataResult<List<CategoryResponseDto>>> getTopicWithPaging(@RequestParam(defaultValue = "0") Integer pageNo,
-                                                                                  @RequestParam(defaultValue = "10") Integer pageSize) {
+    public ResponseEntity<DataResult<List<CategoryResponseDto>>> getTopicWithPaging(@RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "10") Integer pageSize) {
         return ResponseEntity.ok(new DataResult<>("Getting category successfully",
                 HttpStatus.OK.value(), categoryService.getAllCategory(pageNo, pageSize)));
+    }
+    @PostMapping("/saveCategory")
+    public void saveCategory(@RequestBody CategoryRequestDto categoryRequestDto){
+        categoryService.saveCategory(categoryRequestDto);
     }
 
 
