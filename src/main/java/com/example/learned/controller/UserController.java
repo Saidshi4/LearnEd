@@ -59,15 +59,21 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public void changePassword(HttpServletRequest request, @RequestBody ChangePasswordDto changePasswordDto){
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer ")) {
-            throw new IllegalArgumentException("Invalid token");
+    public ResponseEntity<DataResult<?>> changePassword(HttpServletRequest request, @RequestBody ChangePasswordDto changePasswordDto){
+        try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+            Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
+            userService.changePassword(userId, changePasswordDto);
+            return ResponseEntity.ok(new DataResult<>("Update password successfully", HttpStatus.OK.value(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DataResult<>("Invalid token", HttpStatus.BAD_REQUEST.value(), null));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DataResult<>(e.getMessage(), HttpStatus.BAD_REQUEST.value(), null));
         }
-        Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""),true);
-        userService.changePassword(userId,changePasswordDto);
     }
-
 }
 
 

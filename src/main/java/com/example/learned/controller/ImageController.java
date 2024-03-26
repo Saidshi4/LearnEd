@@ -1,9 +1,10 @@
 package com.example.learned.controller;
 
+import com.example.learned.exception.NotFoundException;
 import com.example.learned.model.DataResult;
 import com.example.learned.model.request.ImageSaveDto;
 import com.example.learned.service.authservice.JwtService;
-import com.example.learned.service.authservice.ImageService;
+import com.example.learned.service.ImageService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.NoSuchElementException;
 public class ImageController {
     private final ImageService imageService;
     private final JwtService jwtService;
+
     @PostMapping(value = "/saveImage")
     public ResponseEntity<DataResult<?>> saveImage(HttpServletRequest request, @RequestBody ImageSaveDto imageSaveDto) {
         try {
@@ -34,8 +36,8 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new DataResult<>("Invalid token", HttpStatus.UNAUTHORIZED.value(), null));
         } catch (NoSuchElementException | NullPointerException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new DataResult<>("Error occurred while saving image", HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
         }
     }
 
@@ -48,7 +50,7 @@ public class ImageController {
             }
             Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
             String imageData = imageService.showImage(userId);
-            if (imageData.equals("null")){
+            if (imageData.equals("null")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>("Image not found", HttpStatus.NOT_FOUND.value(), null));
             }
             return ResponseEntity.ok(new DataResult<>("Image shown successfully", HttpStatus.OK.value(), imageData));
@@ -61,6 +63,24 @@ public class ImageController {
         }
     }
 
+    @PostMapping("/updateImage")
+    public ResponseEntity<DataResult<?>> updateImage(HttpServletRequest request, @RequestBody ImageSaveDto imageSaveDto) {
+        try {
+            String token = request.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new IllegalArgumentException("Invalid token");
+            }
+            Long userId = jwtService.extractUserIdFromAccessToken(token.replace("Bearer ", ""), true);
+            imageService.changeImage(userId, imageSaveDto.getImageData());
+            return ResponseEntity.ok(new DataResult<>("Image saved successfully", HttpStatus.OK.value(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new DataResult<>("Invalid token", HttpStatus.UNAUTHORIZED.value(), null));
+        } catch (NoSuchElementException | NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>("User not found", HttpStatus.NOT_FOUND.value(), null));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new DataResult<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), null));
+        }
+    }
 
 
 //    @PostMapping(value = "/uploadImage")

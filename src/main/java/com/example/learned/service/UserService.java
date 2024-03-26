@@ -26,7 +26,7 @@ public class UserService {
     public UserResponseDto getUserById(Long userId){
         return userMapper.mapEntityToResponseDto(userRepository.findById(userId).orElseThrow());
     }
-    public void changePassword(Long userId, ChangePasswordDto changePasswordDto){
+    public void changePassword(Long userId, ChangePasswordDto changePasswordDto) throws RuntimeException{
         UserEntity user=userRepository.findById(userId).orElseThrow();
         if(passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getPassword())){
             user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));

@@ -9,7 +9,7 @@ WORKDIR /app
 COPY build/libs/LearnEd-0.0.1-SNAPSHOT.jar /app/LearnEd-0.0.1-SNAPSHOT.jar
 
 # Expose the port the app runs on
-EXPOSE 8080
+EXPOSE 42015
 
 # Command to run the application
 CMD ["java", "-jar", "LearnEd-0.0.1-SNAPSHOT.jar"]

@@ -1,0 +1,42 @@
+package com.example.learned.service;
+
+import com.example.learned.dao.UserRepository;
+import com.example.learned.entity.UserEntity;
+import com.example.learned.exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
+
+@Service
+@RequiredArgsConstructor
+public class ImageService {
+    private final UserRepository userRepository;
+
+    public void saveImage(String imageData, Long userId) throws NotFoundException {
+        byte[] image = Base64.getDecoder().decode(imageData);
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                ()-> new NotFoundException("User not found by " + userId)
+        );
+        Objects.requireNonNull(user).setImageData(image);
+        userRepository.save(user);
+    }
+
+    public String showImage(Long userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(null);
+        return Base64.getEncoder().encodeToString(user.getImageData());
+    }
+
+    public void changeImage(Long userId, String newImage) throws NotFoundException {
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                ()-> new NotFoundException("User not found by " + userId)
+        );
+        byte[] image = Base64.getDecoder().decode(newImage);
+        Objects.requireNonNull(user).setImageData(image);
+        userRepository.save(user);
+    }
+
+
+}
