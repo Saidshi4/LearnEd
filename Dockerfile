@@ -5,6 +5,9 @@ FROM openjdk:21
 # Set working directory
 WORKDIR /app
 
+
+RUN  gradlew
+
 # Copy the packaged JAR file into the container
 COPY build/libs/LearnEd-0.0.1-SNAPSHOT.jar /app/LearnEd-0.0.1-SNAPSHOT.jar
 
